@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "CCWrapper",
+        "repositoryURL": "https://github.com/Craz1k0ek/CCWrapper.git",
+        "state": {
+          "branch": null,
+          "revision": "bb34a0fea3e38bab1b83c997a3818dc7ec4480b7",
+          "version": "1.0.0"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
