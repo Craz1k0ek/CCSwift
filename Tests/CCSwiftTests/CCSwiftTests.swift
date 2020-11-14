@@ -2,6 +2,27 @@ import XCTest
 import CCSwift
 
 final class CCSwiftTests: XCTestCase {
+    func testRSA() throws {
+        let pk = try RSA.PrivateKey(size: 2048)
+        let pub = pk.publicKey
+        
+        print(pk.PEM, "\n", pub.PEM)
+        
+        let message = Data("Hello World".utf8)
+        
+        let signature = try pk.sign(data: message, padding: .PSS(.SHA256, 30))
+        print(signature as NSData)
+        try pub.verify(signature: signature, for: message, padding: .PSS(.SHA256, 30))
+        
+        let ct = try pub.encrypt(Data("Hello World".utf8), padding: .OAEP(.SHA256))
+        print(ct as NSData)
+        let pt = try pk.decrypt(ct, padding: .OAEP(.SHA256))
+        print(pt as NSData, String(data: pt, encoding: .utf8)!)
+        
+        print(pk, pub)
+        print(pk.components, pub.components)
+    }
+    
     func testHashes() throws {
         let message = Data("abc".utf8)
         
