@@ -2,6 +2,30 @@ import XCTest
 import CCSwift
 
 final class CCSwiftTests: XCTestCase {
+    func testEC() throws {
+        let pk = try EC.PrivateKey(size: 256)
+        let pub = pk.publicKey
+        print(pk, pub)
+        
+        let message = Data("Hello World".utf8)
+        let digest = try SHA256.hash(message)
+        
+        let sraw = try pk.sign(message, digest: .SHA256)
+        let sdig = try pk.sign(hash: digest)
+        
+        print(sraw as NSData, sdig as NSData)
+        
+        try pub.verify(signature: sraw, hash: digest)
+        try pub.verify(signature: sdig, data: message, digest: .SHA256)
+        
+        let bob = try EC.PrivateKey(size: 256)
+        
+        let shared = try pk.computeSharedSecret(for: bob.publicKey, size: 32)
+        let bobShared = try bob.computeSharedSecret(for: pub, size: 32)
+        
+        print(shared as NSData, bobShared as NSData)
+    }
+    
     func testRSA() throws {
         let pk = try RSA.PrivateKey(size: 2048)
         let pub = pk.publicKey
@@ -10,7 +34,7 @@ final class CCSwiftTests: XCTestCase {
         
         let message = Data("Hello World".utf8)
         
-        let signature = try pk.sign(data: message, padding: .PSS(.SHA256, 30))
+        let signature = try pk.sign(message, padding: .PSS(.SHA256, 30))
         print(signature as NSData)
         try pub.verify(signature: signature, for: message, padding: .PSS(.SHA256, 30))
         

@@ -89,11 +89,7 @@ public extension DigestFunction {
     /// - Parameter data: The data to digest.
     /// - Returns: The digest bytes.
     static func hash(_ data: Data) throws -> Data {
-        let digestFunction = try Self()
-        try digestFunction.update(data)
-        let digest = try digestFunction.finalize()
-        digestFunction.destroy()
-        return digest
+        try CCDigest(algorithm: Self.algorithm.rawValue, data: data)
     }
 }
 

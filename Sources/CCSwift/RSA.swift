@@ -43,7 +43,7 @@ public enum RSA {
             try CCRSACryptorGeneratePair(keySize: size, e: exponent, publicKey: &publicRef, privateKey: &reference)
         }
         
-        /// Initialize an RSA private key.
+        /// Initialize an RSA private key from PKCS#1 data.
         /// - Parameter pkcs1: The PKCS#1 formatted data.
         public init(pkcs1: Data) throws {
             try CCRSACryptorImport(keyPackage: pkcs1, key: &reference)
@@ -71,12 +71,12 @@ public enum RSA {
             guard CCRSAGetKeyType(reference) == .private else { throw CryptoError.invalidKey }
         }
         
-        /// Sign the data.
+        /// Sign data.
         /// - Parameters:
         ///   - data: The data to sign.
         ///   - padding: The signature padding scheme.
         /// - Returns: The signature.
-        public func sign(data: Data, padding: Asymmetric.Padding) throws -> Data {
+        public func sign(_ data: Data, padding: Asymmetric.Padding) throws -> Data {
             var algorithm: Digest.Algorithm
             var saltSize: Int = 0
             switch padding {
