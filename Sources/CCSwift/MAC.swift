@@ -52,6 +52,17 @@ public struct HMAC {
     public static func mac(for data: Data, using key: Data, digest: Digest.Algorithm) -> Data {
         CCHmacOneShot(algorithm: digest.rawValue, key: key, data: data)
     }
+    
+    /// Verify a MAC.
+    /// - Parameters:
+    ///   - mac: The MAC to verify.
+    ///   - data: The data that was macced.
+    ///   - key: The key used to MAC.
+    ///   - digest: The digest algorithm.
+    /// - Returns: Whether or not the MAC is valid.
+    public static func verify(mac: Data, for data: Data, using key: Data, digest: Digest.Algorithm) -> Bool {
+        CCHmacOneShot(algorithm: digest.rawValue, key: key, data: data) === mac
+    }
 }
 
 public struct CMAC {
@@ -92,5 +103,15 @@ public struct CMAC {
     /// - Returns: The final MAC.
     public static func mac(for data: Data, using key: Data) -> Data {
         CCAESCmac(key: key, data: data)
+    }
+    
+    /// Verify a MAC.
+    /// - Parameters:
+    ///   - mac: The MAC to verify.
+    ///   - data: The data that was macced.
+    ///   - key: The key used to MAC.
+    /// - Returns: Whether or not the MAC is valid.
+    public static func verify(mac: Data, for data: Data, using key: Data) -> Bool {
+        CCAESCmac(key: key, data: data) === mac
     }
 }
