@@ -172,6 +172,10 @@ public final class AES: BlockCipherSuite {
     public static func CCM(key: Data, iv: Data, aad: Data) -> AESCCM {
         AESCCM(key: key, iv: iv, aad: aad)
     }
+    
+    public static func XTS(key: Data, tweak: Data) throws -> AESXTS {
+        try AESXTS(key: key, tweak: tweak)
+    }
 }
 
 public final class AESGCM {
@@ -331,5 +335,21 @@ public final class AESCCM {
     
     public final func makeDecryptor(size: Int, macSize: Int, mac: Data) throws -> AESCCM.Cryptor {
         try Self.Cryptor.init(key: key, iv: iv, aad: aad, size: size, macSize: macSize, mac: mac)
+    }
+}
+
+public final class AESXTS {
+    internal var cryptor: CCCryptorRef?
+    
+    internal init(key: Data, tweak: Data) throws {
+        try CCCryptorCreateWithMode(op: .both, mode: .xts, alg: .aes, padding: .none, iv: nil, key: key, tweak: tweak, reference: &cryptor)
+    }
+    
+    public final func encrypt(block: Data, iv: Data) throws -> Data {
+        try CCCryptorEncryptDataBlock(cryptor, iv: iv, data: block)
+    }
+    
+    public final func decrypt(block: Data, iv: Data) throws -> Data {
+        try CCCryptorDecryptDataBlock(cryptor, iv: iv, data: block)
     }
 }
