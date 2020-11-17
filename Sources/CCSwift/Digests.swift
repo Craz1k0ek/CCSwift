@@ -1,7 +1,7 @@
 import CCWrapper
 import Foundation
 
-public enum Digest {
+public struct Digest {
     public enum Algorithm {
         /// No digest.
         case none
@@ -48,6 +48,42 @@ public enum Digest {
             case .SHA512:       return .sha512
             }
         }
+    }
+    
+    internal var reference: CCDigestRef
+    
+    internal init(algorithm: Algorithm) throws {
+        reference = CCDigestCreate(algorithm: algorithm.rawValue)
+        try CCDigestInit(algorithm: algorithm.rawValue, reference: reference)
+    }
+    
+    /// Continue to digest data.
+    /// - Parameter data: The data to digest.
+    internal func update(_ data: Data) throws {
+        try CCDigestUpdate(reference, data: data)
+    }
+    
+    /// Conclude digest operations and produce the digest output.
+    /// - Returns: The digest bytes.
+    internal func finalize() throws -> Data {
+        try CCDigestFinalize(reference)
+    }
+    
+    /// Clear and free the digest context.
+    internal func destroy() {
+        CCDigestDestroy(reference)
+    }
+    
+    /// Clear and re-initialize the digest context.
+    internal func reset() {
+        CCDigestReset(reference)
+    }
+    
+    /// Stateless, one-shot digest function.
+    /// - Parameter data: The data to digest.
+    /// - Returns: The digest bytes.
+    internal static func hash(_ data: Data, algorithm: Algorithm) throws -> Data {
+        try CCDigest(algorithm: algorithm.rawValue, data: data)
     }
 }
 
